@@ -1,0 +1,2 @@
+FLEX_GET_ENDPOINT = 'https://gdcdyn.interactivebrokers.com/Universal/servlet/FlexStatementService.GetStatement'
+FLEX_REQ_ENDPOINT = 'https://gdcdyn.interactivebrokers.com/Universal/servlet/FlexStatementService.SendRequest'
