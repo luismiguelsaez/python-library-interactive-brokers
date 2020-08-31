@@ -1,14 +1,12 @@
-import constants
 import requests
 import urllib3
 from time import sleep
 import xml.etree.ElementTree as ET
 
-
 def getReferenceCode(token,id):
 
   referenceParams = {'t': token, 'q': id, 'v': '3'}
-  referenceEndpoint = constants.FLEX_REQ_ENDPOINT
+  referenceEndpoint = 'https://gdcdyn.interactivebrokers.com/Universal/servlet/FlexStatementService.SendRequest'
 
   try:
     referenceReq = requests.get(referenceEndpoint, params=referenceParams,timeout=5)
@@ -31,7 +29,7 @@ def getReferenceCode(token,id):
 def getQueryResult(token,code):
 
   flexParams = {'t': token, 'q': code, 'v': '3'}
-  flexEndpoint = constants.FLEX_GET_ENDPOINT
+  flexEndpoint = 'https://gdcdyn.interactivebrokers.com/Universal/servlet/FlexStatementService.GetStatement'
 
   retry = 4
   xml_status = ""
