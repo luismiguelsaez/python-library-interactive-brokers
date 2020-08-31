@@ -12,19 +12,19 @@ def getReferenceCode(token,id):
     referenceReq = requests.get(referenceEndpoint, params=referenceParams,timeout=5)
   except requests.exceptions.ConnectTimeout as timeoutExc:
     print(timeoutExc)
-    return
+    return -1
   except Exception:
-    return
+    return -1
 
   if referenceReq.status_code == 200:
     referenceTree = ET.fromstring(referenceReq.text)
     referenceCode = referenceTree.findtext('ReferenceCode')
     if referenceTree.findtext('Status') != "Success":
-        return
+        raise RuntimeError('Error in status code [' + referenceTree.findtext('Status') + '] returned from reference endpoint while obtaining reference code')
     else:
         return referenceCode
   else:
-      return
+      raise RuntimeError('Error code HTTP [' + referenceReq.status_code + '] returned from reference endpoint while obtaining reference code')
 
 def getQueryResult(token,code):
 
@@ -38,30 +38,31 @@ def getQueryResult(token,code):
     flexReq = requests.get(flexEndpoint, params=flexParams,timeout=5)
   except requests.exceptions.ConnectTimeout as timeoutExc:
     print(timeoutExc)
-    return
+    return -1
   except Exception:
-      return
+    return -1
 
   if flexReq.status_code == 200:
     # Check if response has XML format
     try:
       flexTree = ET.fromstring(flexReq.text)
-      xml_status = referenceTree.findtext('Status')
+      xml_status = flexTree.findtext('Status')
 
       while retry > 0 and xml_status != "Success":
         flexReq = requests.get(flexEndpoint, params=flexParams,timeout=5)
         flexTree = ET.fromstring(flexReq.text)
-        xml_status = referenceTree.findtext('Status')
+        xml_status = flexTree.findtext('Status')
         retry = retry - 1
 
       if xml_status != "Success":
-        print("Got [%s] result from request [%s]: %s after %d retries",flexTree.findtext('Status'),flexTree.findtext('ErrorCode'),flexTree.findtext('ErrorMessage'),retry)
-      return
+        raise RuntimeError("Got [%s] result from request [%s]: %s after %d retries",flexTree.findtext('Status'),flexTree.findtext('ErrorCode'),flexTree.findtext('ErrorMessage'),retry)
+      else:
+        return flexReq.text
 
-    except:
-        pass
+    except Exception as exception:
+      print(exception)
 
     return flexReq.text
 
   else:
-    return
+    return -1
