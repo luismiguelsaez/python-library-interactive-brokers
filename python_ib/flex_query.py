@@ -20,7 +20,7 @@ def getReferenceCode(token,id):
     referenceTree = ET.fromstring(referenceReq.text)
     referenceCode = referenceTree.findtext('ReferenceCode')
     if referenceTree.findtext('Status') != "Success":
-        raise RuntimeError('Error in status code [' + referenceTree.findtext('Status') + '] returned from reference endpoint while obtaining reference code')
+        raise RuntimeError('Error in status code [' + referenceTree.findtext('Status') + '] returned from reference endpoint while obtaining reference code. Error details [' + referenceTree.findtext('ErrorCode') + '][' + referenceTree.findtext('ErrorMessage') + ']')
     else:
         return referenceCode
   else:
